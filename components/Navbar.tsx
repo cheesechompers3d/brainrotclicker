@@ -81,10 +81,10 @@ export default function Navbar({ onGameSelect, onToggleTheme, isDarkMode, curren
             </span>
           </button>
 
-          {/* Right side navigation and buttons */}
-          <div className="flex items-center space-x-6">
+          {/* Desktop navigation */}
+          <div className="hidden md:flex items-center space-x-6">
             {/* Navigation links */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="flex items-center space-x-6">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -113,34 +113,61 @@ export default function Navbar({ onGameSelect, onToggleTheme, isDarkMode, curren
               <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
             </button>
           </div>
-        </div>
 
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden fixed top-4 right-4"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden text-white"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
 
         {/* Mobile dropdown menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-16 right-4 bg-gray-800 rounded-lg shadow-lg p-4 space-y-2">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleScroll(item.id)}
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-gray-800 shadow-lg">
+            <div className="px-4 py-2 space-y-3">
+              {/* Navigation items */}
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleScroll(item.id)}
+                  className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded"
+                >
+                  {item.name}
+                </button>
+              ))}
+              
+              {/* Divider */}
+              <div className="border-t border-gray-700 my-2"></div>
+              
+              {/* More Games link */}
+              <Link
+                href="/more-games"
                 className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded"
+                onClick={() => setIsMenuOpen(false)}
               >
-                {item.name}
+                More Games
+              </Link>
+              
+              {/* Theme toggle */}
+              <button
+                onClick={() => {
+                  onToggleTheme();
+                  setIsMenuOpen(false);
+                }}
+                className="flex w-full items-center px-4 py-2 text-white hover:bg-gray-700 rounded"
+              >
+                <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} className="mr-2" />
+                {isDarkMode ? "Light Mode" : "Dark Mode"}
               </button>
-            ))}
+            </div>
           </div>
         )}
       </div>

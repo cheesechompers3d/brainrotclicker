@@ -33,34 +33,31 @@ export default function FAQ({ faq }: FAQProps) {
   }, [faq.items.length])
 
   return (
-    <div className="mt-8 bg-gray-900 rounded-xl p-8">
-      <h2 className="text-3xl font-bold mb-8 text-center text-white">
-        {faq.title}
+    <div className="mt-4 lg:mt-8 bg-gray-900 rounded-xl p-4 lg:p-8">
+      <h2 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-8 text-center text-white">
+        {faq.title || "常见问题"}
       </h2>
-      <div className="space-y-4">
+      <div className="space-y-3 lg:space-y-4">
         {faq.items.map((item, index) => (
           <div
             key={index}
-            className="rounded-lg p-6 bg-gray-800/50"
+            className="rounded-lg p-4 lg:p-6 bg-gray-800/50"
           >
-            <h3 className={`text-lg font-semibold mb-3 ${questionColors[index]}`}>
+            <h3 className={`text-base lg:text-lg font-semibold mb-2 lg:mb-3 ${questionColors[index]}`}>
               {item.question}
             </h3>
-            <p className="text-white leading-relaxed">
+            <p className="text-sm lg:text-base text-white/90 leading-relaxed">
               {item.answer}
             </p>
           </div>
         ))}
       </div>
-      <div className="mt-8 p-6 bg-gray-800/50 rounded-lg">
-        <h3 className="text-lg font-semibold mb-3 text-white">
+      <div className="mt-6 lg:mt-8 p-4 lg:p-6 bg-gray-800/50 rounded-lg">
+        <h3 className="text-base lg:text-lg font-semibold mb-2 lg:mb-3 text-white">
           Still Have Questions?
         </h3>
-        <p className="text-white leading-relaxed">
-          If you can't find the answer to your question about Cheese Chompers 3D in our FAQ, 
-          please reach out to our community support team. Our dedicated staff is passionate about 
-          ensuring every player has the best possible experience with Cheese Chompers 3D and will 
-          respond to your inquiry promptly.
+        <p className="text-sm lg:text-base text-white/90 leading-relaxed">
+          If you can't find the answer you need in our FAQ, please contact our community support team. Our dedicated staff is committed to ensuring every player gets the best gaming experience and will respond to your inquiries promptly.
         </p>
       </div>
     </div>

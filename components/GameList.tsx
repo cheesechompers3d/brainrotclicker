@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 interface GameListProps {
   games?: Game[]
-  currentGame: string | null
+  currentGame: string | undefined | null
   onGameSelect: (slug: string) => void
   isDarkMode: boolean
 }
@@ -23,7 +23,7 @@ export default function GameList({
   const renderAdSlot = (index: number) => (
     <div 
       key={`ad-${index}`} 
-      className="col-span-2 h-[120px] bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 my-2"
+      className="col-span-2 h-[80px] lg:h-[120px] bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 my-1 lg:my-2"
     >
       Ad Slot {index + 1}
     </div>
@@ -51,15 +51,17 @@ export default function GameList({
           }`}
           onClick={() => handleGameClick(game.slug)}
         >
-          <div className="relative aspect-square rounded-lg overflow-hidden mb-2">
+          <div className="relative aspect-square rounded-xl overflow-hidden mb-2 bg-gray-100">
             <Image
               src={game.icon}
               alt={game.title}
               fill
               className="object-cover"
+              sizes="(max-width: 768px) 50vw, 33vw"
+              priority={index < 4}
             />
           </div>
-          <h3 className="text-sm font-medium text-center truncate px-2">
+          <h3 className="text-sm font-medium text-center truncate px-1">
             {game.title}
           </h3>
         </div>
@@ -74,8 +76,13 @@ export default function GameList({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      {renderGameItems()}
+    <div>
+      <div className="py-4 px-2">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Hot Games</h2>
+      </div>
+      <div className="grid grid-cols-2 gap-4 px-2">
+        {renderGameItems()}
+      </div>
     </div>
   )
 } 
