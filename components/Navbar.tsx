@@ -6,12 +6,16 @@ import { useRouter, usePathname } from "next/navigation"
 import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
+import { cn } from "@/lib/utils"
 
 interface NavbarProps {
   onGameSelect?: (gameName: string) => void
   onToggleTheme: () => void
   isDarkMode: boolean
   currentGameTitle?: string
+  isMobile?: boolean
+  onShowGameList?: () => void
+  onNavigateHome?: () => void
 }
 
 const navItems = [
@@ -23,14 +27,22 @@ const navItems = [
   { name: "FAQ", id: "faq" }
 ]
 
-export default function Navbar({ onGameSelect, onToggleTheme, isDarkMode, currentGameTitle }: NavbarProps) {
+export default function Navbar({ 
+  onGameSelect, 
+  onToggleTheme, 
+  isDarkMode, 
+  currentGameTitle,
+  isMobile,
+  onShowGameList,
+  onNavigateHome
+}: NavbarProps) {
   const router = useRouter()
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [siteName, setSiteName] = useState("Loading...")
 
   useEffect(() => {
-    // 从 API 加载配置
+    // Load config from API
     fetch('/api/config')
       .then(res => res.json())
       .then(data => {
@@ -42,7 +54,7 @@ export default function Navbar({ onGameSelect, onToggleTheme, isDarkMode, curren
   }, [])
 
   const handleScroll = (id: string) => {
-    // 如果在 More Games 页面,先跳转到主页
+    // If on More Games page, redirect to home first
     if (pathname === '/more-games') {
       router.push('/')
       return
@@ -60,7 +72,11 @@ export default function Navbar({ onGameSelect, onToggleTheme, isDarkMode, curren
   }
 
   const handleLogoClick = () => {
-    router.push('/')
+    if (onNavigateHome) {
+      onNavigateHome()
+    } else {
+      router.push('/')
+    }
   }
 
   return (
@@ -81,10 +97,10 @@ export default function Navbar({ onGameSelect, onToggleTheme, isDarkMode, curren
             </span>
           </button>
 
-          {/* Desktop navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {/* Navigation links */}
-            <div className="flex items-center space-x-6">
+          {/* Right side navigation and buttons */}
+          <div className="flex items-center space-x-6">
+            {/* Navigation links - desktop only */}
+            <div className="hidden md:flex items-center space-x-6">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -96,76 +112,85 @@ export default function Navbar({ onGameSelect, onToggleTheme, isDarkMode, curren
               ))}
             </div>
 
-            {/* More Games button */}
+            {/* More Games button - desktop only */}
             <Link
               href="/more-games"
-              className="bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-700 text-white text-sm"
+              className="hidden md:block bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-700 text-white text-sm"
             >
               More Games
             </Link>
 
-            {/* Theme toggle button */}
+            {/* Theme toggle button - desktop only */}
             <button
               onClick={onToggleTheme}
-              className="bg-gray-700 p-2 rounded-lg text-white"
+              className="hidden md:block bg-gray-700 p-2 rounded-lg text-white"
               aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
               <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
             </button>
-          </div>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+            {/* Mobile menu button - always visible on mobile */}
+            <button
+              className="block md:hidden text-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Mobile dropdown menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-gray-800 shadow-lg">
-            <div className="px-4 py-2 space-y-3">
-              {/* Navigation items */}
+          <div className="md:hidden fixed top-0 right-0 w-64 h-screen bg-gray-900 shadow-lg z-50">
+            <div className="flex justify-end p-2 border-b border-gray-800">
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="text-gray-400 hover:text-white p-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Menu items */}
+            <div className="p-4 space-y-2">
+              {/* Show navigation items */}
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => handleScroll(item.id)}
-                  className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded"
+                  className="block w-full text-left text-white hover:text-purple-400 transition-colors py-2"
                 >
                   {item.name}
                 </button>
               ))}
               
-              {/* Divider */}
-              <div className="border-t border-gray-700 my-2"></div>
-              
-              {/* More Games link */}
+              {/* More Games button - always visible */}
               <Link
                 href="/more-games"
-                className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700 rounded"
+                className="block w-full text-center text-white bg-purple-600 hover:bg-purple-700 transition-colors rounded-lg py-3 mt-4"
                 onClick={() => setIsMenuOpen(false)}
               >
                 More Games
               </Link>
               
-              {/* Theme toggle */}
+              {/* Theme toggle button - always visible */}
               <button
                 onClick={() => {
-                  onToggleTheme();
-                  setIsMenuOpen(false);
+                  onToggleTheme()
+                  setIsMenuOpen(false)
                 }}
-                className="flex w-full items-center px-4 py-2 text-white hover:bg-gray-700 rounded"
+                className="block w-full text-center text-white bg-gray-800 hover:bg-gray-700 transition-colors rounded-lg py-3 mt-2"
               >
-                <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} className="mr-2" />
-                {isDarkMode ? "Light Mode" : "Dark Mode"}
+                {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               </button>
             </div>
           </div>

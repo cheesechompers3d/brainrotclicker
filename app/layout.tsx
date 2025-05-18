@@ -1,13 +1,11 @@
 import type React from "react"
 import "./globals.css"
-import type { Metadata } from "next"
 import GoogleAnalytics from "@/components/GoogleAnalytics"
+import { ThemeProvider } from '@/components/theme-provider'
+import CanonicalUrl from '@/components/Metadata'
+import { metadata } from './metadata'
 
-export const metadata: Metadata = {
-  title: 'Brainrot Clicker',
-  description: "Experience Brainrot Clicker, a mind-bending clicker game that challenges your reflexes and strategic thinking. With its addictive gameplay mechanics and deep progression system, it's perfect for both casual and hardcore players!",
-  generator: 'v0.dev'
-}
+export { metadata }
 
 export default function RootLayout({
   children,
@@ -15,13 +13,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="font-sans bg-gray-900 text-white">
-        <GoogleAnalytics />
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <CanonicalUrl />
+          <GoogleAnalytics />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
 }
-
-import './globals.css'
